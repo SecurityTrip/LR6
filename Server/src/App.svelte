@@ -1,39 +1,64 @@
 <script lang="ts">
-  import Greet from './lib/Greet.svelte'
+  import { onMount, onDestroy } from 'svelte';
+  import { listen } from '@tauri-apps/api/event';
+  import { invoke } from '@tauri-apps/api/tauri';
+
+  let messages = [];
+
+  async function initializeApp() {
+    await invoke('initialize');
+  }
+
+  onMount(() => {
+    initializeApp();
+
+    const unsubscribe = listen('msgs', (event) => {
+      messages = [...messages, event.payload];
+    });
+  });
+
+  function saveLogsToFile() {
+    const logs = messages.join('\n');
+    const blob = new Blob([logs], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'logs.txt';
+    link.click();
+    URL.revokeObjectURL(url);
+  }
 </script>
 
 <main class="container">
-  <h1>Welcome to Tauri!</h1>
-
-  <div class="row">
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo vite" alt="Vite Logo" />
-    </a>
-    <a href="https://tauri.app" target="_blank">
-      <img src="/tauri.svg" class="logo tauri" alt="Tauri Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank">
-      <img src="/svelte.svg" class="logo svelte" alt="Svelte Logo" />
-    </a>
+  <h2>Логи</h2>
+  <div class="log-container">
+    <ul class="log-list">
+      {#each messages as message}
+        <li class="log-item">{message}</li>
+      {/each}
+    </ul>
   </div>
-
-  <p>
-    Click on the Tauri, Vite, and Svelte logos to learn more.
-  </p>
-
-  <div class="row">
-    <Greet />
-  </div>
-
-
+  <button on:click={saveLogsToFile}>Сохранить</button>
 </main>
 
 <style>
-  .logo.vite:hover {
-    filter: drop-shadow(0 0 2em #747bff);
+  .log-container {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
   }
 
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00);
+  .log-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .log-item {
+    padding: 5px;
+    margin-bottom: 5px;
+    background-color: #f2f2f2;
+    border-radius: 4px;
+    color: black;
   }
 </style>

@@ -29,6 +29,7 @@ fn start_connection_timer1(app: tauri::AppHandle) {
                 Ok(_) => {
                     let total_elapsed_time = start_time.elapsed();
                     let _ = app.emit_all("connectionSuccess1", total_elapsed_time.as_secs());
+                    let _ = app.emit_all("updateConnectionTime1", total_elapsed_time.as_secs());
 
                     // Отправка данных на сервер
                     let client = reqwest::Client::new();
@@ -66,6 +67,7 @@ fn start_connection_timer2(app: tauri::AppHandle) {
                 Ok(_) => {
                     let total_elapsed_time = start_time.elapsed();
                     let _ = app.emit_all("connectionSuccess2", total_elapsed_time.as_secs());
+                    let _ = app.emit_all("updateConnectionTime2", total_elapsed_time.as_secs());
 
                     
                     // Отправка данных на сервер
@@ -105,6 +107,7 @@ fn start_connection_timer3(app: tauri::AppHandle) {
                 Ok(_) => {
                     let total_elapsed_time = start_time.elapsed();
                     let _ = app.emit_all("connectionSuccess3", total_elapsed_time.as_secs());
+                    let _ = app.emit_all("updateConnectionTime3", total_elapsed_time.as_secs());
 
                     
                     // Отправка данных на сервер
@@ -144,6 +147,7 @@ fn start_connection_timer4(app: tauri::AppHandle) {
                 Ok(_) => {
                     let total_elapsed_time = start_time.elapsed();
                     let _ = app.emit_all("connectionSuccess4", total_elapsed_time.as_secs());
+                    let _ = app.emit_all("updateConnectionTime4", total_elapsed_time.as_secs());
 
                     
                     // Отправка данных на сервер
