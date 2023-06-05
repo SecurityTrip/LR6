@@ -15,15 +15,20 @@
   let timing4;
   let connect4;
 
+  let timing5;
+  let connect5;
+
   let time1;
   let time2;
   let time3;
   let time4;
+  let time5;
 
   let status1 = "Disconnected";
   let status2 = "Disconnected";
   let status3 = "Disconnected";
   let status4 = "Disconnected";
+  let status5 = "Disconnected";
   
   async function initializeApp() {
     await invoke('initialize');
@@ -60,6 +65,13 @@
   });
   connect4 = listen('connectionSuccess4', (event) => {
     status4 = "Connected";
+  });
+
+  timing5 = listen('updateConnectionTime5', (event) => {
+    time5 = event.payload;
+  });
+  connect5 = listen('connectionSuccess5', (event) => {
+    status5 = "Connected";
   });
 });
 
@@ -100,9 +112,15 @@
   </div>
 
   <div>
-    <h1>Client#4</h1>
+    <h1>Client #4</h1>
     <h2>Connection status: {status4}</h2>
     <h2>Server waiting time: {time4} seconds</h2>
+  </div>
+
+  <div>
+    <h1>Client #5</h1>
+    <h2>Connection status: {status5}</h2>
+    <h2>Server waiting time: {time5} seconds</h2>
   </div>
   
 </main>

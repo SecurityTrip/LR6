@@ -50,6 +50,44 @@ fn start_connection_timer1(app: tauri::AppHandle) {
 }
 
 #[tauri::command]
+fn start_connection_timer5(app: tauri::AppHandle) {
+    tokio::spawn(async move {
+        tokio::time::sleep(Duration::from_secs(0)).await;
+        let start_time = Instant::now();
+        let mut elapsed_time = Duration::from_secs(0);
+
+        let mut timer = interval(Duration::from_secs(1));
+
+        loop {
+            // Отправка времени ожидания во фронтенд
+            let _ = app.emit_all("updateConnectionTime5", elapsed_time.as_secs());
+            //println!("Clinet 1 time: {}", elapsed_time.as_secs());
+
+            match TcpStream::connect("127.0.0.1:8080").await {
+                Ok(_) => {
+                    let total_elapsed_time = start_time.elapsed();
+                    let _ = app.emit_all("connectionSuccess5", total_elapsed_time.as_secs());
+                    let _ = app.emit_all("updateConnectionTime5", total_elapsed_time.as_secs());
+
+                    // Отправка данных на сервер
+                    let client = reqwest::Client::new();
+                    let url = "http://127.0.0.1:8080"; // Замените на адрес сервера
+                    let body = format!("клиент 5 ожидал {} секунд", total_elapsed_time.as_secs());
+                    let _ = client.post(url).body(body).send().await;
+
+                    break;
+                }
+                Err(_) => {
+                    elapsed_time += Duration::from_secs(1);
+                }
+            }
+
+            timer.tick().await;
+        }
+    });
+}
+
+#[tauri::command]
 fn start_connection_timer2(app: tauri::AppHandle) {
     tokio::spawn(async move {
         tokio::time::sleep(Duration::from_secs(3)).await;
@@ -175,6 +213,7 @@ fn initialize(app: tauri::AppHandle) {
     start_connection_timer2(app.clone()); // Явный вызов функции start_connection_timer2
     start_connection_timer3(app.clone()); // Явный вызов функции start_connection_timer3
     start_connection_timer4(app.clone()); // Явный вызов функции start_connection_timer4
+    start_connection_timer5(app.clone()); // Явный вызов функции start_connection_timer5
     let _ = app.emit_all("initialize", ());
 }
 
