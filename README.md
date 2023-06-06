@@ -1,5 +1,6 @@
 # LR6
 
-#Инструкция
+# Инструкция
 
-* Установить NodeJS
+* Установить NodeJS (https://nodejs.org/en/download)
+* 
